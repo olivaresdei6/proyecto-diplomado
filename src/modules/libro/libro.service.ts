@@ -29,9 +29,9 @@ export class LibroService {
             throw new BadRequestException('El campo enviado no es permitido. Se esperaba uno de estos: ' + camposBusquedaLibro.join(', '));
         }
         else if (busqueda && campo) {
-            return await this.servicioDeBaseDeDatos.libro.obtenerRegistrosPaginados({limite, pagina, busqueda, campo});
+            return await this.servicioDeBaseDeDatos.libro.obtenerRegistrosPaginados({limite, pagina, busqueda, campo, condicion: `estado = ${1}`});
         }else {
-            return await this.servicioDeBaseDeDatos.libro.obtenerRegistrosPaginados({limite, pagina});
+            return await this.servicioDeBaseDeDatos.libro.obtenerRegistrosPaginados({limite, pagina, condicion: `estado = ${1}`});
         }
     }
 

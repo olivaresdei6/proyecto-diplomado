@@ -16,7 +16,7 @@ export const JoiValidationSchema = Joi.object({
 	DATABASE_PASSWORD: Joi.string().required(),
 	DATABASE_PORT: Joi.number().default(3306),
 	DATABASE_HOST: Joi.string().required(),
-	PORT_SERVER: Joi.number().default(80),
+	PORT: Joi.number().default(80),
 	JWT_SECRET: Joi.string().required(),
 	STAGE: Joi.string().valid("dev", "prod").required(),
 	URL_API: Joi.string().required(),

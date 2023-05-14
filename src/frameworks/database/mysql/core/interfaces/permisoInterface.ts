@@ -1,5 +1,5 @@
 export interface PermisoInterface {
-    uuidDeLaRuta: string;
+    idDeLaRuta: number;
     rolDeUsuario: string;
     nombreDelModulo: string;
     rutaDelModulo: string;
@@ -10,7 +10,7 @@ export interface PermisoInterface {
 }
 
 export interface ParametroInterface {
-    uuid: string;
+    id: number;
     nombre: string;
     es_requerido: boolean;
     observacion: string;

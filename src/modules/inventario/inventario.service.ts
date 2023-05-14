@@ -68,10 +68,14 @@ export class InventarioService {
         }
     }
 
-    async obtenerDevoluciones(rol: string, uuidUsuario: string){
+    async obtenerDevoluciones(id: number){
+        console.log('Rol: ');
         const devoluciones = await this.servicioDeBaseDeDatos.inventario.obtenerRegistros();
+        const usuario = await this.servicioDeBaseDeDatos.usuario.obtenerUnRegistroPor({where: {id}}, 'Usuario', false);
+        // @ts-ignore
+        const rol = usuario.rol.nombre;
         if (devoluciones) {
-            if ( rol === roles.usuarioAdministrador || rol === roles.usuarioAdministrador) {
+            if ( rol === roles.usuarioAdministrador || rol === roles.usuarioSuperAdministrador) {
                 return {
                     status: 200,
                     message: 'Devoluciones obtenidas correctamente',
@@ -81,14 +85,9 @@ export class InventarioService {
                 return {
                     status: 200,
                     message: 'Devoluciones obtenidas correctamente',
-                    data: devoluciones.filter(devolucion => devolucion.estado === 2)
+                    // @ts-ignore
+                    data: devoluciones.filter(devolucion => devolucion.estado === 2 && devolucion.usuario.id === id)
                 }
-            }
-            return {
-                status: 200,
-                message: 'Devoluciones obtenidas correctamente',
-                // @ts-ignore
-                data: devoluciones.filter(devolucion => devolucion.estado === 2 && devolucion.usuario.uuid === uuidUsuario)
             }
         }
     }

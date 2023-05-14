@@ -6,7 +6,7 @@ export const envConfiguration = () => ({
     databasePort: parseInt(process.env.DATABASE_PORT),
     databaseHostProd: process.env.DATABASE_HOST,
     databaseHost: process.env.DATABASE_HOST,
-    portServer: parseInt(process.env.PORT_SERVER, 10),
+    portServer: parseInt(process.env.PORT, 10),
     portServerProd: parseInt(process.env.PORT, 10),
     jwtSecret: process.env.JWT_SECRET,
     satage: process.env.STAGE,

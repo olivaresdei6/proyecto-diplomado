@@ -124,7 +124,12 @@ export class UsuarioController {
     @ApiResponse({ status: 404, description: 'Not Found: El código de usuario no existe' })
     @Post('cerrar_sesion')
     logOut(@Req() req) {
-        const token = req.headers.authorization.split(' ')[1];
+        let token;
+        for (let i = 0; i < req.rawHeaders.length; i++) {
+            if (req.rawHeaders[i] === 'Authorization') {
+                token =  req.rawHeaders[i + 1].split(' ')[1];
+            }
+        }
         return this.usuarioService.cerrarSesion(token);
     }
 

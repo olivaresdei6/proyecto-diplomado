@@ -15,4 +15,4 @@ services:
         environment:
             APP_VERSION: ${APP_VERSION}
             STAGE: ${STAGE}
-            PORT_SERVER: ${PORT_SERVER}
+            PORT_SERVER: ${PORT}

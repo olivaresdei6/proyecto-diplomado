@@ -10,12 +10,13 @@ import {
     UseInterceptors
 } from "@nestjs/common";
 import { ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { InventarioEntity, LibroEntity } from "../../frameworks/database/mysql/entities";
+import { InventarioEntity, LibroEntity, UsuarioEntity } from "../../frameworks/database/mysql/entities";
 import { PaginacionInterceptor } from "../../config/iterceptors/paginacion.interceptor";
 import { Auth } from "../../decorators/auth.decorator";
 import { InventarioService } from "./inventario.service";
 import { CrearPrestamoDto } from "./dto/crear-prestamo.dto";
 import { CrearDevolucionDto } from "./dto/crear-devolucion.dto";
+import { roles } from "../usuario/objects/roles";
 
 @ApiTags("Inventarios")
 @Controller('inventario')
@@ -50,8 +51,15 @@ export class InventarioController {
     @ApiResponse({ status: 403, description: 'Forbidden: Verifique que el token de autenticación sea válido y que no halla expirado.' })
     @ApiResponse({ status: 404, description: 'Not Found: No se encontraron prestamos.' })
     @Get('/prestamo/all')
-    obtenerTodosLosPrestamos() {
-        return this.inventarioService.obtenerPrestamos();
+    obtenerTodosLosPrestamos(@Req() req) {
+        const usuario = req.user;
+        const rol = usuario.rol.nombre;
+        if (rol === roles.usuarioAdministrador || rol === roles.usuarioSuperAdministrador) {
+            return this.inventarioService.obtenerPrestamos();
+        } else {
+            return this.inventarioService.obtenerPrestamosDeUnUsuario(usuario.uuid);
+        }
+
     }
 
     @ApiResponse({ status: 201, description: 'Devoluciones encontradas correctamente.', type: InventarioEntity, isArray: true})
@@ -61,8 +69,8 @@ export class InventarioController {
     @ApiResponse({ status: 404, description: 'Not Found: No se encontraron devoluciones' })
     @Get('/devolucion/all')
     obtenerDevoluciones(@Req() req) {
-        const usuario = req.user;
-        return this.inventarioService.obtenerDevoluciones(usuario.rol.nombre, usuario.uuid);
+        const id = req.user.id;
+        return this.inventarioService.obtenerDevoluciones(+id);
     }
 
 

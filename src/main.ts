@@ -84,7 +84,7 @@ async function main() {
    * Exponiendo el documento de Swagger en la ruta /api.
    */
   SwaggerConfig.ConfigSwaggerModule(app);
-  await app.listen(envConfiguration().portServer);
+  await app.listen(envConfiguration().portServer, "0.0.0.0");
 }
 
 main().then(() => {

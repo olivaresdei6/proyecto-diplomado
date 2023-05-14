@@ -9,13 +9,13 @@ export class AuthUsuarioGuard implements CanActivate {
     }
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
-        console.log('LLegó al guard');
-        const parametros = Object.keys(context.switchToHttp().getRequest().params);
-        const querys  = Object.keys(context.switchToHttp().getRequest().query);
-        const usuario: UsuarioEntity = this.obtenerUsuarioAutenticado(context);
-        const token: string = this.obtenerTokenDeLaSolicitud(context);
-        const metodo: string = this.obtenerElMetodoDeLaSolicitud(context);
-        const ruta: string = this.obtenerLaRutaSolicitada(context);
+        const request = context.switchToHttp().getRequest();
+        const parametros = Object.keys(request.params);
+        const querys  = Object.keys(request.query);
+        const usuario: UsuarioEntity = this.obtenerUsuarioAutenticado(request);
+        const token: string = this.obtenerTokenDeLaSolicitud(request);
+        const metodo: string = this.obtenerElMetodoDeLaSolicitud(request);
+        const ruta: string = this.obtenerLaRutaSolicitada(context, request);
         const [rolId, permisos, isTokenValido] = await Promise.all([
             this.obtenerElUuidDelRol(usuario),
             //@ts-ignore
@@ -28,13 +28,11 @@ export class AuthUsuarioGuard implements CanActivate {
         throw new UnauthorizedException('No tienes permisos para acceder a este recurso');
     }
 
-    private obtenerUsuarioAutenticado(context: ExecutionContext): UsuarioEntity {
-        const request = context.switchToHttp().getRequest();
+    private obtenerUsuarioAutenticado(request): UsuarioEntity {
         return request.user;
     }
 
-    private obtenerTokenDeLaSolicitud(context: ExecutionContext): string {
-        const request = context.switchToHttp().getRequest();
+    private obtenerTokenDeLaSolicitud(request): string {
         for (let i = 0; i < request.rawHeaders.length; i++) {
             if (request.rawHeaders[i] === 'Authorization') {
                 return request.rawHeaders[i + 1].split(' ')[1];
@@ -42,16 +40,14 @@ export class AuthUsuarioGuard implements CanActivate {
         }
     }
 
-    private obtenerElMetodoDeLaSolicitud(context: ExecutionContext): string {
-        const request = context.switchToHttp().getRequest();
+    private obtenerElMetodoDeLaSolicitud(request): string {
         return request.method;
     }
 
-    private obtenerLaRutaSolicitada(context: ExecutionContext): string {
-        const querys  = Object.keys(context.switchToHttp().getRequest().query);
-        const parametros = Object.keys(context.switchToHttp().getRequest().params);
-        let url = context.switchToHttp().getRequest()._parsedUrl.pathname;
-        console.log(url);
+    private obtenerLaRutaSolicitada(context: ExecutionContext, request): string {
+        const querys  = Object.keys(request.query);
+        const parametros = Object.keys(request.params);
+        let url = request._parsedUrl.pathname;
         if (querys.length > 0) {
             return url.split('?')[0];
         }
@@ -63,7 +59,8 @@ export class AuthUsuarioGuard implements CanActivate {
 
     private async obtenerElUuidDelRol(usuario: UsuarioEntity): Promise<number> {
         const rol = (await this.servicioDeBaseDeDatos.usuario.obtenerUnRegistroPor(
-            { where: { uuid: usuario.uuid } },
+            // @ts-ignore
+            { where: { id: parseInt(usuario.id) } },
             'Usuario',
         )).rol as PermisoRolEntity;
 
@@ -110,7 +107,6 @@ export class AuthUsuarioGuard implements CanActivate {
             return permiso.ruta === ruta && permiso.metodoHttp === metodoHttp && permiso.parametros.length === 0;
         });
         if (!permiso) return false;
-        console.log('Wncontro el permiso');
         if (queries.length > 0) {
             for (const query of queries) {
                 let isParametroValido = false;

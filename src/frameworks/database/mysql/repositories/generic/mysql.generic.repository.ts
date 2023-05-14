@@ -121,9 +121,9 @@ export class MysqlGenericRepository<T> implements IGenericRepository<T> {
         if (busqueda && campo) {
             // Se comprueba si busqueda es un numero o un string.
             if(typeof busqueda === 'number') {
-                queryBuilder.where(`${campo} = ${busqueda} AND estado = ${1}`);
+                queryBuilder.where(`${campo} = ${busqueda}`);
             }else {
-                queryBuilder.where(`estado = ${1} AND ${campo} LIKE :busqueda`, { busqueda: `%${busqueda}%` });
+                queryBuilder.where(`${campo} LIKE :busqueda`, { busqueda: `%${busqueda}%` });
             }
         }
 
@@ -131,6 +131,7 @@ export class MysqlGenericRepository<T> implements IGenericRepository<T> {
         if (condicion) {
             queryBuilder.andWhere(condicion);
         }
+
 
         // Calcula el número total de registros.
         const cantidadTotalDeRegistros = await queryBuilder.getCount();
@@ -145,6 +146,9 @@ export class MysqlGenericRepository<T> implements IGenericRepository<T> {
 
             // Ordena los resultados por ID de forma ascendente.
             queryBuilder.orderBy(`id`, 'ASC');
+
+            // Se muestran la consulta SQL.
+            console.log(queryBuilder.getQuery());
 
             // Ejecuta la consulta y devuelve un objeto que contiene los registros de la página actual, el número total de registros, la cantidad de páginas necesarias y la cantidad de registros restantes.
             const registrosPaginados = await queryBuilder.getMany();
