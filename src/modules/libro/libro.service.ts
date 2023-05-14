@@ -45,7 +45,12 @@ export class LibroService {
     }
 
     async actualizarRegistro(uuid: string, actualizarLibroDto: ActualizarLibroDto)  {
-        const libro = await this.servicioDeBaseDeDatos.libro.actualizarRegistro(uuid, actualizarLibroDto);
+        let libro;
+        if (actualizarLibroDto.unidades) {
+            libro = await this.servicioDeBaseDeDatos.libro.actualizarRegistro(uuid, {...actualizarLibroDto, unidadesDisponibles: actualizarLibroDto.unidades});
+        }else{
+            libro = await this.servicioDeBaseDeDatos.libro.actualizarRegistro(uuid, {...actualizarLibroDto});
+        }
         if (libro) {
             return {
                 status: 201,
