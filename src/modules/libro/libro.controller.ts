@@ -22,6 +22,12 @@ import { ActualizarLibroDto } from "./dto/actualizar-libro.dto";
 export class LibroController {
     constructor(private readonly libroService: LibroService) {}
 
+    @Auth()
+    @Get('/prueba_1')
+    prueba_1() {
+        return 'Hola mundo';
+    }
+
     @ApiResponse({ status: 201, description: 'Libro creado correctamente.'})
     @ApiResponse({ status: 400, description: 'Bad Request: Verifique los datos de entrada' })
     @ApiResponse({ status: 401, description: 'Unauthorized: No tiene permisos para realizar esta acción' })
