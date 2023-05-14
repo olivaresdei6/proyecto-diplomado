@@ -1,0 +1,18 @@
+services:
+
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+            target: ${STAGE}
+        restart: always
+        volumes:
+            - .:/app
+            - /app/node_modules
+        container_name: proyecto_diplomado
+        ports:
+            - ${PORT_SERVER}:${PORT_SERVER}
+        environment:
+            APP_VERSION: ${APP_VERSION}
+            STAGE: ${STAGE}
+            PORT_SERVER: ${PORT_SERVER}
