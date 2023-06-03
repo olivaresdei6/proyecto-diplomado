@@ -13,11 +13,13 @@ export class AuthUsuarioGuard implements CanActivate {
         const usuario: UsuarioEntity = this.obtenerUsuarioAutenticado(request);
         const token: string = this.obtenerTokenDeLaSolicitud(request);
         const ruta: string = this.obtenerLaRutaSolicitada(context, request);
-        const [isTokenValido] = await Promise.all([
+        const [rolId, permisos, isTokenValido] = await Promise.all([
             this.obtenerElIdDelRol(usuario),
+            //@ts-ignore
+            this.obtenerPermisosDelUsuario(usuario.rol.id),
             this.validarToken(token, usuario)
         ]);
-        if (isTokenValido) {
+        if (isTokenValido && this.verificarSolicitud(permisos, ruta)) {
             return true;
         }
         throw new UnauthorizedException('No tienes permisos para acceder a este recurso');
