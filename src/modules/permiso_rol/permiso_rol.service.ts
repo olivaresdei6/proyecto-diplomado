@@ -35,12 +35,12 @@ export class PermisoRolService {
         }
     }
 
-    async obtenerUnRegistro(uuid: string): Promise<PermisoRolEntity> {
-        return await this.servicioDeBaseDeDatos.permisoRol.obtenerUnRegistroPor({where: {uuid, estado: 1}}, 'Rol');
+    async obtenerUnRegistro(id: number): Promise<PermisoRolEntity> {
+        return await this.servicioDeBaseDeDatos.permisoRol.obtenerUnRegistroPor({where: {id, estado: 1}}, 'Rol');
     }
 
-    async actualizarRegistro(uuid: string, actualizarPermisoRolDto: ActualizarPermisoRolDto)  {
-        const rol = await this.servicioDeBaseDeDatos.permisoRol.actualizarRegistro(uuid, actualizarPermisoRolDto);
+    async actualizarRegistro(id: number, actualizarPermisoRolDto: ActualizarPermisoRolDto)  {
+        const rol = await this.servicioDeBaseDeDatos.permisoRol.actualizarRegistro(id, actualizarPermisoRolDto);
         if (rol) {
             return {
                 status: 201,
@@ -49,8 +49,8 @@ export class PermisoRolService {
         }
     }
 
-    async eliminarRegistro(uuid: string) {
-        const respuesta = await this.servicioDeBaseDeDatos.permisoRol.actualizarRegistro(uuid, {estado: 1});
+    async eliminarRegistro(id: number) {
+        const respuesta = await this.servicioDeBaseDeDatos.permisoRol.actualizarRegistro(id, {estado: 1});
         if (respuesta) {
             return {
                 status: 201,

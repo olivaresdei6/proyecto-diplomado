@@ -17,12 +17,9 @@ export interface ParametroInterface {
 }
 
 export interface RutaParametros {
-    permiso: PermisoInterface,
-    parametros: ParametroInterface[]
+    permiso: PermisoInterface
 }
 
 export interface ResultadoParametrosDeUnaRuta {
     ruta: string;
-    metodoHttp: string;
-    parametros: ParametroInterface[];
 }

@@ -2,8 +2,7 @@ import {
     Body,
     Controller,
     Get,
-    Param,
-    ParseUUIDPipe,
+    Param, ParseIntPipe,
     Patch,
     Post,
     Query,
@@ -67,6 +66,7 @@ export class PermisoParametroController {
     @ApiResponse({ status: 404, description: 'Not Found: No se encontraron tipos de datos.' })
     @Get('/tipos_de_datos')
     obtenerTiposDeDatos() {
+        console.log('Obteniendo tipos de datos');
         return this.permisoParametroService.obtenerTiposDeDatos();
     }
 
@@ -75,9 +75,9 @@ export class PermisoParametroController {
     @ApiResponse({ status: 401, description: 'Unauthorized: No tiene permisos para realizar esta acción' })
     @ApiResponse({ status: 403, description: 'Forbidden: Verifique que el token de autenticación sea válido y que no halla expirado.' })
     @ApiResponse({ status: 404, description: 'Not Found: Permiso de ruta no existe.' })
-    @Get(':uuid')
-    obtenerUnRegistro(@Param('uuid', ParseUUIDPipe) uuid) {
-        return this.permisoParametroService.obtenerUnRegistro(uuid)
+    @Get(':id')
+    obtenerUnRegistro(@Param('id', ParseIntPipe) id:number) {
+        return this.permisoParametroService.obtenerUnRegistro(id)
     }
 
     @ApiResponse({ status: 201, description: 'Registro eliminado correctamente.', type: LibroEntity})
@@ -85,9 +85,9 @@ export class PermisoParametroController {
     @ApiResponse({ status: 401, description: 'Unauthorized: No tiene permisos para realizar esta acción' })
     @ApiResponse({ status: 403, description: 'Forbidden: Verifique que el token de autenticación sea válido y que no halla expirado.' })
     @ApiResponse({ status: 404, description: 'Not Found: El registro no existe.' })
-    @Patch('/delete/:uuid')
-    eliminarRegistro(@Param('uuid', ParseUUIDPipe) uuid) {
-        return this.permisoParametroService.eliminarRegistro(uuid);
+    @Patch('/delete/:id')
+    eliminarRegistro(@Param('id', ParseIntPipe) id:number) {
+        return this.permisoParametroService.eliminarRegistro(id);
     }
 
     @ApiResponse({ status: 201, description: 'Permiso de ruta actualizado correctamente.', type: PermisoParametroEntity})
@@ -95,8 +95,8 @@ export class PermisoParametroController {
     @ApiResponse({ status: 401, description: 'Unauthorized: No tiene permisos para realizar esta acción' })
     @ApiResponse({ status: 403, description: 'Forbidden: Verifique que el token de autenticación sea válido y que no halla expirado.' })
     @ApiResponse({ status: 404, description: 'Not Found: El Permiso de ruta no existe.' })
-    @Patch(':uuid')
-    actualizarRegistro(@Param('uuid', ParseUUIDPipe) uuid, @Body() actualizarPermisoParametroDto: ActualizarPermisoParametroDto) {
-        return this.permisoParametroService.actualizarRegistro(uuid, actualizarPermisoParametroDto);
+    @Patch(':id')
+    actualizarRegistro(@Param('id', ParseIntPipe) id:number, @Body() actualizarPermisoParametroDto: ActualizarPermisoParametroDto) {
+        return this.permisoParametroService.actualizarRegistro(id, actualizarPermisoParametroDto);
     }
 }

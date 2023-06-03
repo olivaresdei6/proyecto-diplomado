@@ -3,7 +3,7 @@ import {
     Controller,
     Get,
     Param,
-    ParseUUIDPipe,
+    ParseIntPipe,
     Patch,
     Post,
     Query,
@@ -100,9 +100,9 @@ export class PermisoRutaController {
     @ApiResponse({ status: 401, description: 'Unauthorized: No tiene permisos para realizar esta acción' })
     @ApiResponse({ status: 403, description: 'Forbidden: Verifique que el token de autenticación sea válido y que no halla expirado.' })
     @ApiResponse({ status: 404, description: 'Not Found: Permiso de ruta no existe.' })
-    @Get(':uuid')
-    obtenerUnRegistro(@Param('uuid', ParseUUIDPipe) uuid) {
-        return this.permisoRutaService.obtenerUnRegistro(uuid)
+    @Get(':id')
+    obtenerUnRegistro(@Param('id', ParseIntPipe) id:number) {
+        return this.permisoRutaService.obtenerUnRegistro(id)
     }
 
     @ApiResponse({ status: 201, description: 'La relación fue encontrada correctamente.', type: PermisoParametroRutaEntity})
@@ -110,9 +110,9 @@ export class PermisoRutaController {
     @ApiResponse({ status: 401, description: 'Unauthorized: No tiene permisos para realizar esta acción' })
     @ApiResponse({ status: 403, description: 'Forbidden: Verifique que el token de autenticación sea válido y que no halla expirado.' })
     @ApiResponse({ status: 404, description: 'Not Found: La relación no existe.' })
-    @Get('/relacion/:uuid')
-    obtenerRelacionRutaParametro(@Param('uuid', ParseUUIDPipe) uuid) {
-        return this.permisoRutaService.obtenerRelacionRutaParametro(uuid)
+    @Get('/relacion/:id')
+    obtenerRelacionRutaParametro(@Param('id', ParseIntPipe) id:number) {
+        return this.permisoRutaService.obtenerRelacionRutaParametro(id)
     }
 
 
@@ -121,9 +121,9 @@ export class PermisoRutaController {
     @ApiResponse({ status: 401, description: 'Unauthorized: No tiene permisos para realizar esta acción' })
     @ApiResponse({ status: 403, description: 'Forbidden: Verifique que el token de autenticación sea válido y que no halla expirado.' })
     @ApiResponse({ status: 404, description: 'Not Found: La Ruta no existe.' })
-    @Patch(':uuid')
-    actualizarRegistro(@Param('uuid', ParseUUIDPipe) uuid, @Body() actualizarPermisoRutaDto: ActualizarPermisoRutaDto) {
-        return this.permisoRutaService.actualizarRegistro(uuid, actualizarPermisoRutaDto);
+    @Patch(':id')
+    actualizarRegistro(@Param('id', ParseIntPipe) id:number, @Body() actualizarPermisoRutaDto: ActualizarPermisoRutaDto) {
+        return this.permisoRutaService.actualizarRegistro(id, actualizarPermisoRutaDto);
     }
 
     @ApiResponse({ status: 201, description: 'Relación actualizada correctamente.'})
@@ -131,9 +131,9 @@ export class PermisoRutaController {
     @ApiResponse({ status: 401, description: 'Unauthorized: No tiene permisos para realizar esta acción' })
     @ApiResponse({ status: 403, description: 'Forbidden: Verifique que el token de autenticación sea válido y que no halla expirado.' })
     @ApiResponse({ status: 404, description: 'Not Found: La Ruta no existe.' })
-    @Patch('/relacion/:uuid')
-    actualizarRelacionRutaParametro(@Param('uuid', ParseUUIDPipe) uuid, @Body() actualizarRelacionRutaParametroDto: ActualizarRelacionRutaParametroDto) {
-        return this.permisoRutaService.actualizarRelacionRutaParametro(uuid, actualizarRelacionRutaParametroDto);
+    @Patch('/relacion/:id')
+    actualizarRelacionRutaParametro(@Param('id', ParseIntPipe) id:number, @Body() actualizarRelacionRutaParametroDto: ActualizarRelacionRutaParametroDto) {
+        return this.permisoRutaService.actualizarRelacionRutaParametro(id, actualizarRelacionRutaParametroDto);
     }
 
     @ApiResponse({ status: 201, description: 'Registro eliminado correctamente.', type: LibroEntity})
@@ -141,9 +141,9 @@ export class PermisoRutaController {
     @ApiResponse({ status: 401, description: 'Unauthorized: No tiene permisos para realizar esta acción' })
     @ApiResponse({ status: 403, description: 'Forbidden: Verifique que el token de autenticación sea válido y que no halla expirado.' })
     @ApiResponse({ status: 404, description: 'Not Found: El registro no existe.' })
-    @Patch('/delete/:uuid')
-    eliminarRegistro(@Param('uuid', ParseUUIDPipe) uuid) {
-        return this.permisoRutaService.eliminarRegistro(uuid);
+    @Patch('/delete/:id')
+    eliminarRegistro(@Param('id', ParseIntPipe) id) {
+        return this.permisoRutaService.eliminarRegistro(id);
     }
 
     @ApiResponse({ status: 201, description: 'Registro eliminado correctamente.', type: LibroEntity})
@@ -151,8 +151,8 @@ export class PermisoRutaController {
     @ApiResponse({ status: 401, description: 'Unauthorized: No tiene permisos para realizar esta acción' })
     @ApiResponse({ status: 403, description: 'Forbidden: Verifique que el token de autenticación sea válido y que no halla expirado.' })
     @ApiResponse({ status: 404, description: 'Not Found: El registro no existe.' })
-    @Patch('/delete/relacion/:uuid')
-    eliminarRelacion(@Param('uuid', ParseUUIDPipe) uuid) {
-        return this.permisoRutaService.eliminarRelacionRutaParametro(uuid);
+    @Patch('/delete/relacion/:id')
+    eliminarRelacion(@Param('id', ParseIntPipe) id) {
+        return this.permisoRutaService.eliminarRelacionRutaParametro(id);
     }
 }

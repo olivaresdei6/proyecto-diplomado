@@ -3,7 +3,6 @@ import {
     Controller,
     Get,
     Param, ParseIntPipe,
-    ParseUUIDPipe,
     Patch,
     Post,
     Query, UseInterceptors
@@ -67,9 +66,9 @@ export class ParametroController {
     @ApiResponse({ status: 401, description: 'Unauthorized: No tiene permisos para realizar esta acción' })
     @ApiResponse({ status: 403, description: 'Forbidden: Verifique que el token de autenticación sea válido y que no halla expirado.' })
     @ApiResponse({ status: 404, description: 'Not Found: El parámetro no existe.' })
-    @Get(':uuid')
-    obtenerUnRegistro(@Param('uuid', ParseUUIDPipe) uuid: string): Promise<ParametroEntity> {
-        return this.parametroService.obtenerUnRegistro(uuid);
+    @Get(':id')
+    obtenerUnRegistro(@Param('id', ParseIntPipe) id: number): Promise<ParametroEntity> {
+        return this.parametroService.obtenerUnRegistro(id);
     }
     
     
@@ -80,9 +79,9 @@ export class ParametroController {
     @ApiResponse({ status: 403, description: 'Forbidden: Verifique que el token de autenticación sea válido y que no halla expirado.' })
     @ApiResponse({ status: 404, description: 'Not Found: El parámetro no existe.' })
     @Auth()
-    @Patch(':uuid')
-    actualizarRegistro(@Param('uuid', ParseUUIDPipe) uuid:string, @Body() actualizarParametroDto: ActualizarParametroDto) {
-        return this.parametroService.actualizarRegistro(uuid, actualizarParametroDto);
+    @Patch(':id')
+    actualizarRegistro(@Param('id', ParseIntPipe) id:number, @Body() actualizarParametroDto: ActualizarParametroDto) {
+        return this.parametroService.actualizarRegistro(id, actualizarParametroDto);
     }
     
     

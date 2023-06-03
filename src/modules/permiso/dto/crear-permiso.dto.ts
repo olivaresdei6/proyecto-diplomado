@@ -1,31 +1,31 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsOptional, IsString, IsUUID, MaxLength, MinLength } from "class-validator";
+import { IsBoolean, IsNumber, IsOptional, IsString, IsUUID, MaxLength, MinLength } from "class-validator";
 
 
 export class CrearPermisoDto {
     @ApiProperty({
-        description: 'UUID de la ruta',
-        example: 'ab7b1c9c-1b1a-4f6a-8f0a-2b1a1d6b1a1d',
+        description: 'ID de la ruta',
+        example: 2,
         required: true
     })
-    @IsUUID('4', { message: 'El UUID de la ruta debe ser un UUID valido' })
-    uuidRuta!: string;
+    @IsNumber({}, { message: 'El ID de la ruta debe ser un número' })
+    idRuta!: number;
 
     @ApiProperty({
-        description: 'UUID del modulo',
-        example: 'ab7b1c9c-1b1a-4f6a-8f0a-2b1a1d6b1a1d',
+        description: 'ID del modulo',
+        example: 2,
         required: true
     })
-    @IsUUID('4', { message: 'El UUID del modulo debe ser un UUID valido' })
-    uuidModulo!: string;
+    @IsNumber({}, { message: 'El ID del modulo debe ser un número' })
+    idModulo!: number;
 
     @ApiProperty({
-        description: 'UUID del rol',
-        example: 'ab7b1c9c-1b1a-4f6a-8f0a-2b1a1d6b1a1d',
+        description: 'ID del rol',
+        example: 2,
         required: true
     })
-    @IsUUID('4', { message: 'El UUID del modulo debe ser un UUID valido' })
-    uuidRol!: string;
+    @IsNumber({}, { message: 'El ID del rol debe ser un número' })
+    idRol!:number;
 
 
     @ApiProperty({

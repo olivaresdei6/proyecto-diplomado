@@ -2,16 +2,12 @@ import {
     Body,
     Controller,
     Get,
-    Param,
-    ParseUUIDPipe,
-    Patch,
+    Param, ParseIntPipe,
     Post,
-    Query, Req,
-    UseInterceptors
+    Req,
 } from "@nestjs/common";
-import { ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { InventarioEntity, LibroEntity, UsuarioEntity } from "../../frameworks/database/mysql/entities";
-import { PaginacionInterceptor } from "../../config/iterceptors/paginacion.interceptor";
+import { ApiResponse, ApiTags } from "@nestjs/swagger";
+import { InventarioEntity } from "../../frameworks/database/mysql/entities";
 import { Auth } from "../../decorators/auth.decorator";
 import { InventarioService } from "./inventario.service";
 import { CrearPrestamoDto } from "./dto/crear-prestamo.dto";
@@ -30,8 +26,8 @@ export class InventarioController {
     @ApiResponse({ status: 403, description: 'Forbidden: Verifique que el token de autenticación sea válido y que no halla expirado.' })
     @Post('/prestamo')
     registrarPrestamo( @Req() req, @Body() crearPrestamoDto: CrearPrestamoDto) {
-        const uuidUsuario = req.user.uuid;
-        return this.inventarioService.registrarPrestamo(crearPrestamoDto, uuidUsuario);
+        const idUsuario = req.user.id;
+        return this.inventarioService.registrarPrestamo(crearPrestamoDto, idUsuario);
     }
 
     @ApiResponse({ status: 201, description: 'Devolución creada correctamente.'})
@@ -40,8 +36,8 @@ export class InventarioController {
     @ApiResponse({ status: 403, description: 'Forbidden: Verifique que el token de autenticación sea válido y que no halla expirado.' })
     @Post('/devolucion')
     registrarDevolucion(@Req() req, @Body() crearDevolucionDto: CrearDevolucionDto) {
-        const uuidUsuario = req.user.uuid;
-        return this.inventarioService.registrarDevolucion(crearDevolucionDto, uuidUsuario);
+        const idUsuario = req.user.id;
+        return this.inventarioService.registrarDevolucion(crearDevolucionDto, +idUsuario);
     }
 
 
@@ -57,7 +53,7 @@ export class InventarioController {
         if (rol === roles.usuarioAdministrador || rol === roles.usuarioSuperAdministrador) {
             return this.inventarioService.obtenerPrestamos();
         } else {
-            return this.inventarioService.obtenerPrestamosDeUnUsuario(usuario.uuid);
+            return this.inventarioService.obtenerPrestamosDeUnUsuario(parseInt(usuario.id));
         }
 
     }
@@ -79,9 +75,9 @@ export class InventarioController {
     @ApiResponse({ status: 401, description: 'Unauthorized: No tiene permisos para realizar esta acción' })
     @ApiResponse({ status: 403, description: 'Forbidden: Verifique que el token de autenticación sea válido y que no halla expirado.' })
     @ApiResponse({ status: 404, description: 'Not Found: El inventario no existe.' })
-    @Get(':uuid')
-    obtenerUnRegistro(@Param('uuid', ParseUUIDPipe) uuid:string): Promise<InventarioEntity>  {
-        return this.inventarioService.obtenerUnRegistro(uuid);
+    @Get(':id')
+    obtenerUnRegistro(@Param('id', ParseIntPipe) id:number): Promise<InventarioEntity>  {
+        return this.inventarioService.obtenerUnRegistro(id);
     }
 
     @ApiResponse({ status: 201, description: 'Prestamos encontrados correctamente.', type: InventarioEntity})
@@ -89,9 +85,9 @@ export class InventarioController {
     @ApiResponse({ status: 401, description: 'Unauthorized: No tiene permisos para realizar esta acción' })
     @ApiResponse({ status: 403, description: 'Forbidden: Verifique que el token de autenticación sea válido y que no halla expirado.' })
     @ApiResponse({ status: 404, description: 'Not Found: El inventario no existe.' })
-    @Get(':uuid')
+    @Get(':id')
     obtenerPrestamosDeUnUsuario(@Req() req ): Promise<InventarioEntity>  {
-        const uuidUsuario = req.user.uuid;
-        return this.inventarioService.obtenerUnRegistro(uuidUsuario);
+        const idUsuario = req.user.id;
+        return this.inventarioService.obtenerUnRegistro(+idUsuario);
     }
 }

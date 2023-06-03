@@ -10,7 +10,7 @@ export class PermisoParametroService {
     constructor( private readonly servicioDeBaseDeDatos: IConexionDb) {}
 
     async crearRegistro(crearPermisoParametroDto: CrearPermisoParametroDto)  {
-        const valorParametro = await this.obtenerValorParametroPorUuid(crearPermisoParametroDto.uuidTipoDeDato);
+        const valorParametro = await this.obtenerValorParametroPorId(crearPermisoParametroDto.idTipoDeDato);
         //@ts-ignore
         if(valorParametro && valorParametro.parametro.nombre === parametrosRegistrados.tiposDeDatosParaParametrosDeRutas){
             const permisoParametro =  await this.servicioDeBaseDeDatos.permisoParametro.crearRegistro({...crearPermisoParametroDto, tipoDeDato: valorParametro.id});
@@ -65,8 +65,8 @@ export class PermisoParametroService {
         }
     }
 
-    async obtenerUnRegistro(uuid: string) {
-        let permisoParametroRuta =  await this.servicioDeBaseDeDatos.permisoParametro.obtenerUnRegistroPor({where: {uuid, estado: 1}}, 'Permiso De Ruta');
+    async obtenerUnRegistro(id: number) {
+        let permisoParametroRuta =  await this.servicioDeBaseDeDatos.permisoParametro.obtenerUnRegistroPor({where: {id, estado: 1}}, 'Permiso De Ruta');
         if (permisoParametroRuta) {
             //@ts-ignore
             permisoParametroRuta.tipoDeDato = await this.servicioDeBaseDeDatos.valorParametro.obtenerUnRegistroPor({
@@ -79,16 +79,16 @@ export class PermisoParametroService {
         }
     }
 
-    async actualizarRegistro(uuid: string, actualizarPermisoParametroDto: ActualizarPermisoParametroDto)  {
+    async actualizarRegistro(id: number, actualizarPermisoParametroDto: ActualizarPermisoParametroDto)  {
         let  permisoDeRuta;
-        if (actualizarPermisoParametroDto.uuidTipoDeDato) {
-            const valorParametro = await this.obtenerValorParametroPorUuid(actualizarPermisoParametroDto.uuidTipoDeDato);
+        if (actualizarPermisoParametroDto.idTipoDeDato) {
+            const valorParametro = await this.obtenerValorParametroPorId(actualizarPermisoParametroDto.idTipoDeDato);
             //@ts-ignore
             if(valorParametro && valorParametro.parametro.nombre === parametrosRegistrados.tiposDeDatosParaParametrosDeRutas){
-                permisoDeRuta = await this.servicioDeBaseDeDatos.permisoParametro.actualizarRegistro(uuid, {...actualizarPermisoParametroDto, tipoDeDato: valorParametro.id});
+                permisoDeRuta = await this.servicioDeBaseDeDatos.permisoParametro.actualizarRegistro(id, {...actualizarPermisoParametroDto, tipoDeDato: valorParametro.id});
             }
         }else{
-            permisoDeRuta = await this.servicioDeBaseDeDatos.permisoParametro.actualizarRegistro(uuid, actualizarPermisoParametroDto);
+            permisoDeRuta = await this.servicioDeBaseDeDatos.permisoParametro.actualizarRegistro(id, actualizarPermisoParametroDto);
         }
         if (permisoDeRuta) {
             return {
@@ -98,8 +98,8 @@ export class PermisoParametroService {
         }
     }
 
-    async eliminarRegistro(uuid: string) {
-        const permisoDeRuta = await this.servicioDeBaseDeDatos.permisoParametro.actualizarRegistro(uuid, {estado: 0});
+    async eliminarRegistro(id: number) {
+        const permisoDeRuta = await this.servicioDeBaseDeDatos.permisoParametro.actualizarRegistro(id, {estado: 0});
         if (permisoDeRuta) {
             return {
                 status: 201,
@@ -108,8 +108,8 @@ export class PermisoParametroService {
         }
     }
 
-    private obtenerValorParametroPorUuid(uuid: string) {
-        return this.servicioDeBaseDeDatos.valorParametro.obtenerUnRegistroPor({ where: { uuid, estado: 1 } }, 'Valor Parametro');
+    private obtenerValorParametroPorId(id: number) {
+        return this.servicioDeBaseDeDatos.valorParametro.obtenerUnRegistroPor({ where: { id, estado: 1 } }, 'Valor Parametro');
     }
 
 }

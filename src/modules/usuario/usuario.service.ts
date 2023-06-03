@@ -1,6 +1,6 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { IConexionDb } from "../../frameworks/database/mysql/core/abstract";
-import { ParametroEntity, RegistroDeAccesoEntity, UsuarioEntity } from "../../frameworks/database/mysql/entities";
+import { RegistroDeAccesoEntity, UsuarioEntity } from "../../frameworks/database/mysql/entities";
 import * as bcrypt from "bcrypt";
 import { ActualizarUsuarioDto, CrearUsuarioDto, LoginUsuarioDto } from "./dto";
 import { generateCodeAuth } from "../../helpers/generateCodeAuth";
@@ -62,8 +62,8 @@ export class UsuarioService {
         if (!usuario) {
             throw new NotFoundException('No se encontro un usuario en el sistema con los datos ingresados');
         }
-        const {uuid} = usuario;
-        await this.servicioDeBaseDeDatos.usuario.actualizarRegistro(uuid, {estaActivo: true, codigoAutenticacion: generateCodeAuth()});
+        const {id} = usuario;
+        await this.servicioDeBaseDeDatos.usuario.actualizarRegistro(id, {estaActivo: true, codigoAutenticacion: generateCodeAuth()});
         return {
             status: 200,
             message: 'Cuenta activada correctamente. Se realiza una peticion get, no es lo ideal, pero no alcanze a hacer el front la expongo directamente aunque lo ideal seria que en el correo se enviara un link con el codigo de autenticacion y se redirigiera a la pagina de login',
@@ -77,7 +77,7 @@ export class UsuarioService {
         if (!usuarioEncontrado) {
             throw new NotFoundException('No se encontro un usuario en el sistema con los datos ingresados');
         }
-        const {password: passwordUsuario, uuid} = usuarioEncontrado;
+        const {password: passwordUsuario, id} = usuarioEncontrado;
         const passwordValida = await bcrypt.compare(password, passwordUsuario);
         if (!passwordValida) {
             throw new NotFoundException('No se encontro un usuario en el sistema con los datos ingresados')
@@ -87,13 +87,13 @@ export class UsuarioService {
             throw new ForbiddenException('El usuario no esta activo en el sistema. Por favor revise su correo para activar su cuenta')
         }
 
-        const token = await this.registrarToken(uuid, usuarioEncontrado.id);
+        const token = await this.registrarToken(id);
 
         return {
             status: 200,
             message: 'Inicio de sesión correcto',
             data: {
-                uuid,
+                id,
                 token,
                 // @ts-ignore
                 rol: usuarioEncontrado.rol.nombre,
@@ -135,8 +135,8 @@ export class UsuarioService {
         }
     }
     
-    async obtenerUnUsuario(uuid: string) {
-        const usuario =  await this.servicioDeBaseDeDatos.usuario.obtenerUnRegistroPor({where: {uuid}}, 'Parámetro');
+    async obtenerUnUsuario(id: number) {
+        const usuario =  await this.servicioDeBaseDeDatos.usuario.obtenerUnRegistroPor({where: {id}}, 'Parámetro');
         if (!usuario) {
             throw new NotFoundException('No se encontro un usuario en el sistema con los datos ingresados');
         }else{
@@ -149,13 +149,13 @@ export class UsuarioService {
         }
     }
     
-    async actualizarRegistro(uuid: string, actualizarUsuarioDto: ActualizarUsuarioDto)  {
+    async actualizarRegistro(id: number, actualizarUsuarioDto: ActualizarUsuarioDto)  {
         const {password} = actualizarUsuarioDto;
         if (password) {
             const salt = await bcrypt.genSalt( 10 );
             actualizarUsuarioDto.password = await bcrypt.hash(password, salt);
         }
-        const usuario = await this.servicioDeBaseDeDatos.usuario.actualizarRegistro(uuid, actualizarUsuarioDto);
+        const usuario = await this.servicioDeBaseDeDatos.usuario.actualizarRegistro(id, actualizarUsuarioDto);
         if (!usuario) {
             throw new NotFoundException('No se encontro un usuario en el sistema con los datos ingresados');
         }else{
@@ -168,8 +168,8 @@ export class UsuarioService {
         }
     }
 
-    private async registrarToken(uuid: string, id:number) {
-        const token  = this.getToken({uuid});
+    private async registrarToken(id: number) {
+        const token  = this.getToken({id});
         const { exp } = await this.extraerDataToken(token);
         const fechaDeExpiracionToken = new Date(exp * 1000);
         await this.servicioDeBaseDeDatos.registroDeAcceso.crearRegistro({
@@ -198,7 +198,7 @@ export class UsuarioService {
     }
 
     private async extraerDataToken(token: string) {
-        const { exp, uuid } = this.jwtService.verify(token, {secret: envConfiguration().jwtSecret});
-        return { exp, uuid };
+        const { exp, id } = this.jwtService.verify(token, {secret: envConfiguration().jwtSecret});
+        return { exp, id };
     }
 }

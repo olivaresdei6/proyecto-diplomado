@@ -2,8 +2,7 @@ import {
     Body,
     Controller,
     Get,
-    Param,
-    ParseUUIDPipe,
+    Param, ParseIntPipe,
     Patch,
     Post,
     Query,
@@ -65,9 +64,9 @@ export class PermisoRolController {
     @ApiResponse({ status: 401, description: 'Unauthorized: No tiene permisos para realizar esta acción' })
     @ApiResponse({ status: 403, description: 'Forbidden: Verifique que el token de autenticación sea válido y que no halla expirado.' })
     @ApiResponse({ status: 404, description: 'Not Found: El modulo de permiso no existe.' })
-    @Get(':uuid')
-    obtenerUnRegistro(@Param('uuid', ParseUUIDPipe) uuid): Promise<PermisoRolEntity>  {
-        return this.permisoRolService.obtenerUnRegistro(uuid)
+    @Get(':id')
+    obtenerUnRegistro(@Param('id', ParseIntPipe) id:number): Promise<PermisoRolEntity>  {
+        return this.permisoRolService.obtenerUnRegistro(id)
     }
 
 
@@ -76,9 +75,9 @@ export class PermisoRolController {
     @ApiResponse({ status: 401, description: 'Unauthorized: No tiene permisos para realizar esta acción' })
     @ApiResponse({ status: 403, description: 'Forbidden: Verifique que el token de autenticación sea válido y que no halla expirado.' })
     @ApiResponse({ status: 404, description: 'Not Found: El registro no existe.' })
-    @Patch('/delete/:uuid')
-    eliminarRegistro(@Param('uuid', ParseUUIDPipe) uuid) {
-        return this.permisoRolService.eliminarRegistro(uuid);
+    @Patch('/delete/:id')
+    eliminarRegistro(@Param('id', ParseIntPipe) id:number) {
+        return this.permisoRolService.eliminarRegistro(id);
     }
 
     @ApiResponse({ status: 201, description: 'Rol actualizado correctamente.', type: PermisoModuloEntity})
@@ -87,7 +86,7 @@ export class PermisoRolController {
     @ApiResponse({ status: 403, description: 'Forbidden: Verifique que el token de autenticación sea válido y que no halla expirado.' })
     @ApiResponse({ status: 404, description: 'Not Found: El rol no existe.' })
     @Patch(':uuid')
-    actualizarRegistro(@Param('uuid', ParseUUIDPipe) uuid, @Body() actualizarPermisoRolDto: ActualizarPermisoRolDto) {
-        return this.permisoRolService.actualizarRegistro(uuid, actualizarPermisoRolDto);
+    actualizarRegistro(@Param('id', ParseIntPipe) id:number, @Body() actualizarPermisoRolDto: ActualizarPermisoRolDto) {
+        return this.permisoRolService.actualizarRegistro(id, actualizarPermisoRolDto);
     }
 }

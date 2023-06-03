@@ -10,12 +10,12 @@ import { roles } from "../usuario/objects/roles";
 export class InventarioService {
     constructor( private readonly servicioDeBaseDeDatos: IConexionDb) {}
 
-    async registrarPrestamo(crearPrestamoDto: CrearPrestamoDto, uuidUsuario: string)  {
-        const {uuidLibro} = crearPrestamoDto;
+    async registrarPrestamo(crearPrestamoDto: CrearPrestamoDto, idUsuario: number)  {
+        const {idLibro} = crearPrestamoDto;
         // Verificon que el libro y el usuario existan
         const [libro, usuario] = await Promise.all([
-            this.servicioDeBaseDeDatos.libro.obtenerUnRegistroPor({where: {uuid: uuidLibro}}, 'Libro', false),
-            this.servicioDeBaseDeDatos.usuario.obtenerUnRegistroPor({where: {uuid: uuidUsuario}}, 'Usuario', false)
+            this.servicioDeBaseDeDatos.libro.obtenerUnRegistroPor({where: {id: idLibro}}, 'Libro', false),
+            this.servicioDeBaseDeDatos.usuario.obtenerUnRegistroPor({where: {id: idUsuario}}, 'Usuario', false)
         ]);
         if (!libro) {
             throw new BadRequestException('El libro no existe');
@@ -33,7 +33,7 @@ export class InventarioService {
             throw new BadRequestException('El usuario ya tiene un prestamo pendiente de este libro');
         }
         const prestamo =  await this.servicioDeBaseDeDatos.inventario.crearRegistro({...crearPrestamoDto, usuario: usuario.id, libro: libro.id});
-        await  this.servicioDeBaseDeDatos.libro.actualizarRegistro(uuidLibro, {unidadesDisponibles: libro.unidadesDisponibles - 1});
+        await  this.servicioDeBaseDeDatos.libro.actualizarRegistro(idLibro, {unidadesDisponibles: libro.unidadesDisponibles - 1});
         if (prestamo) {
             return {
                 status: 201,
@@ -43,12 +43,13 @@ export class InventarioService {
         }
     }
 
-    async registrarDevolucion(registrarDevolucionDto: CrearDevolucionDto, uuidUsuario: string)  {
-        const {uuidPrestamo} = registrarDevolucionDto;
+    async registrarDevolucion(registrarDevolucionDto: CrearDevolucionDto, idUsuario: number)  {
+        const {idPrestamo} = registrarDevolucionDto;
+        console.log('registrarDevolucionDto: ', registrarDevolucionDto);
         // Verificon que el libro y el usuario existan
         const [prestamo, usuario] = await Promise.all([
-            this.servicioDeBaseDeDatos.inventario.obtenerUnRegistroPor({where: {uuid: uuidPrestamo}}, 'Inventario', false),
-            this.servicioDeBaseDeDatos.usuario.obtenerUnRegistroPor({where: {uuid: uuidUsuario}}, 'Usuario', false)
+            this.servicioDeBaseDeDatos.inventario.obtenerUnRegistroPor({where: {id: idPrestamo}}, 'Inventario', false),
+            this.servicioDeBaseDeDatos.usuario.obtenerUnRegistroPor({where: {id: idUsuario}}, 'Usuario', false)
         ]);
         if (!prestamo) {
             throw new BadRequestException('El prestamo no existe');
@@ -56,9 +57,10 @@ export class InventarioService {
         if (!usuario) {
             throw new BadRequestException('El usuario no existe');
         }
-        const devolucion =  await this.servicioDeBaseDeDatos.inventario.actualizarRegistro(uuidPrestamo, {...registrarDevolucionDto, usuario: usuario.id, fechaDeLaDevolucion: new Date(), estado: 2});
+        console.log('prestamo: ', prestamo);
+        const devolucion =  await this.servicioDeBaseDeDatos.inventario.actualizarRegistro(idPrestamo, {...registrarDevolucionDto, usuario: +usuario.id, fechaDeLaDevolucion: new Date(), estado: 2});
         // @ts-ignore
-        await this.servicioDeBaseDeDatos.libro.actualizarRegistro(prestamo.libro.uuid, {unidadesDisponibles: prestamo.libro.unidadesDisponibles + 1});
+        await this.servicioDeBaseDeDatos.libro.actualizarRegistro(+prestamo.libro.id, {unidadesDisponibles: prestamo.libro.unidadesDisponibles + 1});
         if (devolucion) {
             return {
                 status: 201,
@@ -101,13 +103,16 @@ export class InventarioService {
                 data: prestamos.filter(prestamo => prestamo.estado === 1)
             }
         }
+
     }
 
-    async obtenerPrestamosDeUnUsuario(uuidUsuario: string){
+    async obtenerPrestamosDeUnUsuario(idUsuario: number){
+        console.log('idUsuario: ', idUsuario);
         const prestamos = await this.servicioDeBaseDeDatos.inventario.obtenerRegistros();
         if (prestamos) {
+            console.log('prestamos: ', prestamos.filter(prestamo => prestamo.estado === 1));
             // @ts-ignore
-            const prestamosDelUsuario = prestamos.filter(prestamo => prestamo.usuario.uuid === uuidUsuario);
+            const prestamosDelUsuario = prestamos.filter(prestamo => parseInt(prestamo.usuario.id) === idUsuario);
             return {
                 status: 200,
                 message: 'Prestamos obtenidos correctamente',
@@ -117,8 +122,8 @@ export class InventarioService {
     }
 
 
-    async obtenerUnRegistro(uuid: string): Promise<InventarioEntity> {
-        const respuesta =  await this.servicioDeBaseDeDatos.inventario.obtenerUnRegistroPor({where: {uuid}}, 'Inventario', false);
+    async obtenerUnRegistro(id: number): Promise<InventarioEntity> {
+        const respuesta =  await this.servicioDeBaseDeDatos.inventario.obtenerUnRegistroPor({where: {id}}, 'Inventario', false);
         if (respuesta) {
             return respuesta;
         }else {

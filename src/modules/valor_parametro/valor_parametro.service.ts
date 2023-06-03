@@ -11,8 +11,7 @@ export class ValorParametroService {
     
     
     async crearRegistro(crearValorParametroDto: CrearValorParametroDto)  {
-        const idParametro = await this.obtenerIdParametroPorUUID(crearValorParametroDto.uuid_parametro);
-        const valorParametro = await this.servicioDeBaseDeDatos.valorParametro.crearRegistro({...crearValorParametroDto, parametro: idParametro});
+        const valorParametro = await this.servicioDeBaseDeDatos.valorParametro.crearRegistro({...crearValorParametroDto, parametro: crearValorParametroDto.idParametro});
         if (valorParametro) {
             return {
                 status: 201,
@@ -22,8 +21,7 @@ export class ValorParametroService {
         }
     }
     
-    async obtenerTodosLosRegistros(uuid:string): Promise<ValorParametroEntity[]> {
-        const idParametro = await this.obtenerIdParametroPorUUID(uuid);
+    async obtenerTodosLosRegistros(idParametro:number): Promise<ValorParametroEntity[]> {
         const valoresParametros =  await this.servicioDeBaseDeDatos.valorParametro.obtenerRegistros()
         if (valoresParametros) {
             // @ts-ignore
@@ -33,8 +31,8 @@ export class ValorParametroService {
         }
     }
     
-    async obtenerUnRegistro(uuid: string) {
-        return await this.servicioDeBaseDeDatos.valorParametro.obtenerUnRegistroPor({where: {uuid}}, 'Valor parámetro');
+    async obtenerUnRegistro(id: number) {
+        return await this.servicioDeBaseDeDatos.valorParametro.obtenerUnRegistroPor({where: {id}}, 'Valor parámetro');
     }
 
     async obtenerRegistrosPaginados(limite: number, pagina: number, busqueda?: string, campo?: string) {
@@ -48,8 +46,8 @@ export class ValorParametroService {
         }
     }
 
-    async actualizarRegistro(uuid: string, actualizarValorParametroDto: ActualizarValorParametroDto){
-        const valorParametro = await this.servicioDeBaseDeDatos.valorParametro.actualizarRegistro(uuid, actualizarValorParametroDto);
+    async actualizarRegistro(id: number, actualizarValorParametroDto: ActualizarValorParametroDto){
+        const valorParametro = await this.servicioDeBaseDeDatos.valorParametro.actualizarRegistro(id, actualizarValorParametroDto);
         if (valorParametro) {
             return {
                 status: 201,
@@ -57,12 +55,4 @@ export class ValorParametroService {
             }
         }
     }
-    private async obtenerIdParametroPorUUID(uuid: string) {
-        const {id} = await this.servicioDeBaseDeDatos.parametro.obtenerUnRegistroPor(
-            {where: {uuid}},
-            'Parámetro'
-        );
-        return id;
-    }
-    
 }

@@ -10,19 +10,16 @@ export class AuthUsuarioGuard implements CanActivate {
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const request = context.switchToHttp().getRequest();
-        const parametros = Object.keys(request.params);
-        const querys  = Object.keys(request.query);
         const usuario: UsuarioEntity = this.obtenerUsuarioAutenticado(request);
         const token: string = this.obtenerTokenDeLaSolicitud(request);
-        const metodo: string = this.obtenerElMetodoDeLaSolicitud(request);
         const ruta: string = this.obtenerLaRutaSolicitada(context, request);
         const [rolId, permisos, isTokenValido] = await Promise.all([
-            this.obtenerElUuidDelRol(usuario),
+            this.obtenerElIdDelRol(usuario),
             //@ts-ignore
             this.obtenerPermisosDelUsuario(usuario.rol.id),
             this.validarToken(token, usuario)
         ]);
-        if (isTokenValido && this.verificarSolicitud(permisos, metodo, ruta, parametros, querys)) {
+        if (isTokenValido && this.verificarSolicitud(permisos, ruta)) {
             return true;
         }
         throw new UnauthorizedException('No tienes permisos para acceder a este recurso');
@@ -40,10 +37,6 @@ export class AuthUsuarioGuard implements CanActivate {
         }
     }
 
-    private obtenerElMetodoDeLaSolicitud(request): string {
-        return request.method;
-    }
-
     private obtenerLaRutaSolicitada(context: ExecutionContext, request): string {
         const querys  = Object.keys(request.query);
         const parametros = Object.keys(request.params);
@@ -52,12 +45,12 @@ export class AuthUsuarioGuard implements CanActivate {
             return url.split('?')[0];
         }
         else if (parametros.length > 0) {
-            return context.switchToHttp().getRequest().route.path.replace('/:uuid', '');
+            return context.switchToHttp().getRequest().route.path.replace('/:id', '');
         }
         return url;
     }
 
-    private async obtenerElUuidDelRol(usuario: UsuarioEntity): Promise<number> {
+    private async obtenerElIdDelRol(usuario: UsuarioEntity): Promise<number> {
         const rol = (await this.servicioDeBaseDeDatos.usuario.obtenerUnRegistroPor(
             // @ts-ignore
             { where: { id: parseInt(usuario.id) } },
@@ -74,8 +67,7 @@ export class AuthUsuarioGuard implements CanActivate {
     }
 
     private async obtenerPermisosDelUsuario(roleId: number): Promise<ResultadoParametrosDeUnaRuta[]> {
-        const permisos =  await this.servicioDeBaseDeDatos.permiso.obtenerPermisos(+roleId);
-        return permisos;
+        return await this.servicioDeBaseDeDatos.permiso.obtenerPermisos(+roleId);
     }
 
     private async validarToken(token: string, usuario: UsuarioEntity): Promise<boolean> {
@@ -95,36 +87,12 @@ export class AuthUsuarioGuard implements CanActivate {
         return Boolean(registroDeAcceso && fechaDeExpiracionDelToken > new Date());
     }
 
-    private verificarSolicitud(permisos: ResultadoParametrosDeUnaRuta[], metodoHttp: string, ruta: string, parametros: string[], queries: string[]): boolean {
+    private verificarSolicitud(permisos: ResultadoParametrosDeUnaRuta[], ruta: string): boolean {
 
         const permiso = permisos.find(permiso => {
-            if (parametros.length > 0) {
-                return permiso.ruta === ruta && permiso.metodoHttp === metodoHttp && permiso.parametros.length === parametros.length;
-            }
-            if (queries.length > 0) {
-                return permiso.ruta === ruta && permiso.metodoHttp === metodoHttp && queries.length <= permiso.parametros.length;
-            }
-            return permiso.ruta === ruta && permiso.metodoHttp === metodoHttp && permiso.parametros.length === 0;
+            return permiso.ruta === ruta;
         });
-        if (!permiso) return false;
-        if (queries.length > 0) {
-            for (const query of queries) {
-                let isParametroValido = false;
-                if (!permiso.parametros.some(parametroRegistrado => parametroRegistrado.nombre === query)) {
-                    isParametroValido = false;
-                    break;
-                }
-            }
-        }
-        else {
-            for (const parametro of permiso.parametros) {
-                let isParametroValido = false;
-                if (!queries.some(query => query === parametro.nombre)) {
-                    isParametroValido = false;
-                    break;
-                }
-            }
-        }
-        return true;
+        return !!permiso;
+
     }
 }

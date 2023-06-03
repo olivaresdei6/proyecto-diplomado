@@ -16,20 +16,15 @@ export class MySQLPermisoRepository<T> extends MysqlGenericRepository<T> impleme
         const permisos: RutaParametros[] = await this.fetchPermisosRol(rolId);
         return permisos.map(permiso => {
             let ruta = `/api/v1${permiso.permiso.rutaDelModulo}${permiso.permiso.direccionDeLaRuta}`;
-            const parametros = permiso.parametros.length > 0 ? permiso.parametros : [];
-            return { ruta, metodoHttp: permiso.permiso.metodoHttp, parametros };
+            return { ruta };
         });
     }
 
     private async fetchPermisosRol(rolId: number): Promise<RutaParametros[]> {
         const permisos: PermisoInterface[] = await this.obtenerPermisosDeUnRol(rolId);
-        const parametrosDeLaRutaPromises = permisos.map(permiso => this.obtenerParametrosDeUnaRuta(permiso.idDeLaRuta));
-
-        const parametrosDeLaRuta = await Promise.all(parametrosDeLaRutaPromises);
 
         return permisos.map((permiso, index) => ({
-            permiso,
-            parametros: parametrosDeLaRuta[index]
+            permiso
         }));
     }
 
@@ -46,15 +41,6 @@ export class MySQLPermisoRepository<T> extends MysqlGenericRepository<T> impleme
     `;
         const consulta =  await this.ejecutarQuerySQL(query);
         return consulta as PermisoInterface[];
-    }
-
-    private async obtenerParametrosDeUnaRuta(idRuta: number): Promise<ParametroInterface[]> {
-        const query = `
-        SELECT pp.id, pp.nombre, pp.observacion, pp.es_requerido FROM permiso_parametro pp
-            INNER JOIN permiso_parametro_ruta ppr ON ppr.id_parametro = pp.id
-        WHERE ppr.id_ruta = ${idRuta} AND pp.estado = 1
-    `;
-        return await this.ejecutarQuerySQL(query) as ParametroInterface[];
     }
 
 }

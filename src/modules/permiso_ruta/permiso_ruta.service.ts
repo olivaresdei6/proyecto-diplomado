@@ -12,7 +12,7 @@ export class PermisoRutaService {
     constructor( private readonly servicioDeBaseDeDatos: IConexionDb) {}
 
     async crearRegistro(crearPermisoRutaDto: CrearPermisoRutaDto)  {
-        const valorParametro = await this.obtenerValorParametroPorUuid(crearPermisoRutaDto.uuidMetodoHttp);
+        const valorParametro = await this.obtenerValorParametroPorId(crearPermisoRutaDto.idMetodoHttp);
 
         //@ts-ignore
         if(valorParametro && valorParametro.parametro.nombre === parametrosRegistrados.metodosHttp){
@@ -30,8 +30,8 @@ export class PermisoRutaService {
     }
 
     async crearRelacionRutaParametro( crearRelacionRutaParametroDto:CrearRelacionRutaParametroDto){
-        const {permisoRuta} = await this.obtenerUnRegistro(crearRelacionRutaParametroDto.uuidRuta);
-        const permisoParametro = await this.obtenerParametroPorUuid(crearRelacionRutaParametroDto.uuidParametro);
+        const {permisoRuta} = await this.obtenerUnRegistro(crearRelacionRutaParametroDto.idRuta);
+        const permisoParametro = await this.obtenerParametroPorId(crearRelacionRutaParametroDto.idParametro);
         if(permisoRuta && permisoParametro){
             const relacionRutaParametro = await this.servicioDeBaseDeDatos.permisoParametroRuta.crearRegistro({ruta: permisoRuta.id, parametro: permisoParametro.id});
             if(relacionRutaParametro){
@@ -72,8 +72,8 @@ export class PermisoRutaService {
         }
     }
 
-    async obtenerUnRegistro(uuid: string) {
-        let permisoRuta =  await this.servicioDeBaseDeDatos.permisoRuta.obtenerUnRegistroPor({where: {uuid}}, 'Ruta');
+    async obtenerUnRegistro(id: number) {
+        let permisoRuta =  await this.servicioDeBaseDeDatos.permisoRuta.obtenerUnRegistroPor({where: {id}}, 'Ruta');
         if (permisoRuta) {
             //@ts-ignore
             permisoRuta.metodoHttp = await this.servicioDeBaseDeDatos.valorParametro.obtenerUnRegistroPor({
@@ -92,8 +92,7 @@ export class PermisoRutaService {
             const valoresParametros = await this.servicioDeBaseDeDatos.valorParametro.obtenerRegistros();
             if (valoresParametros) {
                 //@ts-ignore
-                const metodosHttp = valoresParametros.filter(valorParametro => valorParametro.parametro.id === parametro.id && valorParametro.estado === 1)
-                return metodosHttp;
+                return valoresParametros.filter(valorParametro => valorParametro.parametro.id === parametro.id && valorParametro.estado === 1);
             } else {
                 throw new BadRequestException('No se ha encontrado el método http.');
             }
@@ -102,20 +101,20 @@ export class PermisoRutaService {
         }
     }
 
-    async obtenerRelacionRutaParametro(uuid: string) {
-        return await this.servicioDeBaseDeDatos.permisoParametroRuta.obtenerUnRegistroPor({where: {uuid}}, 'Relacion Ruta Parametro');
+    async obtenerRelacionRutaParametro(id: number) {
+        return await this.servicioDeBaseDeDatos.permisoParametroRuta.obtenerUnRegistroPor({where: {id}}, 'Relacion Ruta Parametro');
     }
 
-    async actualizarRegistro(uuid: string, actualizarPermisoRutaDto: ActualizarPermisoRutaDto)  {
+    async actualizarRegistro(id: number, actualizarPermisoRutaDto: ActualizarPermisoRutaDto)  {
         let  permisoRuta;
-        if (actualizarPermisoRutaDto.uuidMetodoHttp) {
-            const valorParametro = await this.obtenerValorParametroPorUuid(actualizarPermisoRutaDto.uuidMetodoHttp);
+        if (actualizarPermisoRutaDto.idMetodoHttp) {
+            const valorParametro = await this.obtenerValorParametroPorId(actualizarPermisoRutaDto.idMetodoHttp);
             //@ts-ignore
             if(valorParametro && valorParametro.parametro.nombre === parametrosRegistrados.metodosHttp){
-                permisoRuta = await this.servicioDeBaseDeDatos.permisoRuta.actualizarRegistro(uuid, {...actualizarPermisoRutaDto, metodoHttp: valorParametro.id});
+                permisoRuta = await this.servicioDeBaseDeDatos.permisoRuta.actualizarRegistro(id, {...actualizarPermisoRutaDto, metodoHttp: valorParametro.id});
             }
         }else{
-            permisoRuta = await this.servicioDeBaseDeDatos.permisoRuta.actualizarRegistro(uuid, actualizarPermisoRutaDto);
+            permisoRuta = await this.servicioDeBaseDeDatos.permisoRuta.actualizarRegistro(id, actualizarPermisoRutaDto);
         }
         if (permisoRuta) {
             return {
@@ -127,27 +126,27 @@ export class PermisoRutaService {
         }
     }
 
-    async actualizarRelacionRutaParametro(uuid: string, actualizarRelacionRutaParametroDto: ActualizarRelacionRutaParametroDto) {
-        const {uuidRuta, uuidParametro, observacion, descripcion} = actualizarRelacionRutaParametroDto;
-        if (uuidParametro) {
-            const permisoParametro = await this.obtenerParametroPorUuid(uuidParametro);
-            await this.servicioDeBaseDeDatos.permisoParametroRuta.actualizarRegistro(uuid, {
+    async actualizarRelacionRutaParametro(id: number, actualizarRelacionRutaParametroDto: ActualizarRelacionRutaParametroDto) {
+        const {idRuta, idParametro, observacion, descripcion} = actualizarRelacionRutaParametroDto;
+        if (idParametro) {
+            const permisoParametro = await this.obtenerParametroPorId(idParametro);
+            await this.servicioDeBaseDeDatos.permisoParametroRuta.actualizarRegistro(id, {
                 parametro: permisoParametro.id, observacion, descripcion
             });
         }
 
-        if (uuidRuta) {
-            const permisoRuta = await this.obtenerUnRegistro(uuidRuta);
-            await this.servicioDeBaseDeDatos.permisoParametroRuta.actualizarRegistro(uuid, {
+        if (idRuta) {
+            const permisoRuta = await this.obtenerUnRegistro(idRuta);
+            await this.servicioDeBaseDeDatos.permisoParametroRuta.actualizarRegistro(id, {
                 ruta: permisoRuta.permisoRuta.id, observacion, descripcion
             });
         }
 
-        else if (uuidParametro && uuidRuta) {
-            const permisoParametro = await this.obtenerParametroPorUuid(uuidParametro);
-            const permisoRuta = await this.obtenerUnRegistro(uuidRuta);
+        else if (idParametro && idRuta) {
+            const permisoParametro = await this.obtenerParametroPorId(idParametro);
+            const permisoRuta = await this.obtenerUnRegistro(idRuta);
             if(permisoParametro && permisoRuta){
-                const relacionRutaParametro = await this.servicioDeBaseDeDatos.permisoParametroRuta.actualizarRegistro(uuid, {
+                const relacionRutaParametro = await this.servicioDeBaseDeDatos.permisoParametroRuta.actualizarRegistro(id, {
                     ruta: permisoRuta.permisoRuta.id, parametro: permisoParametro.id, observacion, descripcion
                 });
                 if(relacionRutaParametro){
@@ -160,7 +159,7 @@ export class PermisoRutaService {
         }
 
         else {
-            await this.servicioDeBaseDeDatos.permisoParametroRuta.actualizarRegistro(uuid, {observacion, descripcion});
+            await this.servicioDeBaseDeDatos.permisoParametroRuta.actualizarRegistro(id, {observacion, descripcion});
         }
 
         return {
@@ -169,8 +168,8 @@ export class PermisoRutaService {
         }
     }
 
-    public async eliminarRelacionRutaParametro(uuid: string) {
-        const relacionRutaParametro = await this.servicioDeBaseDeDatos.permisoParametroRuta.actualizarRegistro(uuid, {estado: 0});
+    public async eliminarRelacionRutaParametro(id: number) {
+        const relacionRutaParametro = await this.servicioDeBaseDeDatos.permisoParametroRuta.actualizarRegistro(id, {estado: 0});
         if (relacionRutaParametro) {
             return {
                 status: 201,
@@ -181,8 +180,8 @@ export class PermisoRutaService {
         }
     }
 
-    public async eliminarRegistro(uuid: string) {
-        const permisoRuta = await this.servicioDeBaseDeDatos.permisoRuta.actualizarRegistro(uuid, {estado: 0});
+    public async eliminarRegistro(id: number) {
+        const permisoRuta = await this.servicioDeBaseDeDatos.permisoRuta.actualizarRegistro(id, {estado: 0});
         if (permisoRuta) {
             return {
                 status: 201,
@@ -193,12 +192,12 @@ export class PermisoRutaService {
         }
     }
 
-    private obtenerValorParametroPorUuid(uuid: string) {
-        return this.servicioDeBaseDeDatos.valorParametro.obtenerUnRegistroPor({ where: { uuid, estado: 1 } }, 'Valor Parametro');
+    private obtenerValorParametroPorId(id: number) {
+        return this.servicioDeBaseDeDatos.valorParametro.obtenerUnRegistroPor({ where: { id, estado: 1 } }, 'Valor Parametro');
     }
 
-    private obtenerParametroPorUuid(uuid: string) {
-        return this.servicioDeBaseDeDatos.permisoParametro.obtenerUnRegistroPor({ where: { uuid, estado: 1 } }, 'Ruta')
+    private obtenerParametroPorId(id: number) {
+        return this.servicioDeBaseDeDatos.permisoParametro.obtenerUnRegistroPor({ where: { id, estado: 1 } }, 'Ruta')
     }
 
 

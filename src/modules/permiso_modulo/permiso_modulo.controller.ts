@@ -2,8 +2,7 @@ import {
     Body,
     Controller,
     Get,
-    Param,
-    ParseUUIDPipe,
+    Param, ParseIntPipe,
     Patch,
     Post,
     Query,
@@ -69,10 +68,9 @@ export class PermisoModuloController {
     @ApiResponse({ status: 403, description: 'Forbidden: Verifique que el token de autenticación sea válido y que no halla expirado.' })
     @ApiResponse({ status: 404, description: 'Not Found: El modulo de permiso no existe.' })
 
-    @Get(':uuid')
-    obtenerUnRegistro(@Param('uuid', ParseUUIDPipe) uuid:string): Promise<PermisoModuloEntity>  {
-        console.log(uuid);
-        return this.permisoModuloService.obtenerUnRegistro(uuid)
+    @Get(':id')
+    obtenerUnRegistro(@Param('id', ParseIntPipe) id:number): Promise<PermisoModuloEntity>  {
+        return this.permisoModuloService.obtenerUnRegistro(id)
     }
 
     @ApiResponse({ status: 201, description: 'Registro eliminado correctamente.', type: LibroEntity})
@@ -80,9 +78,9 @@ export class PermisoModuloController {
     @ApiResponse({ status: 401, description: 'Unauthorized: No tiene permisos para realizar esta acción' })
     @ApiResponse({ status: 403, description: 'Forbidden: Verifique que el token de autenticación sea válido y que no halla expirado.' })
     @ApiResponse({ status: 404, description: 'Not Found: El registro no existe.' })
-    @Patch('/delete/:uuid')
-    eliminarRegistro(@Param('uuid', ParseUUIDPipe) uuid) {
-        return this.permisoModuloService.eliminarRegistro(uuid);
+    @Patch('/delete/:id')
+    eliminarRegistro(@Param('id', ParseIntPipe) id:number) {
+        return this.permisoModuloService.eliminarRegistro(id);
     }
 
     @ApiResponse({ status: 201, description: 'Modulo de permiso actualizado correctamente.', type: PermisoModuloEntity})
@@ -90,8 +88,8 @@ export class PermisoModuloController {
     @ApiResponse({ status: 401, description: 'Unauthorized: No tiene permisos para realizar esta acción' })
     @ApiResponse({ status: 403, description: 'Forbidden: Verifique que el token de autenticación sea válido y que no halla expirado.' })
     @ApiResponse({ status: 404, description: 'Not Found: El modulo de permiso no existe.' })
-    @Patch(':uuid')
-    actualizarRegistro(@Param('uuid', ParseUUIDPipe) uuid, @Body() actualizarPermisoModuloDto: ActualizarPermisoModuloDto) {
-        return this.permisoModuloService.actualizarRegistro(uuid, actualizarPermisoModuloDto);
+    @Patch(':id')
+    actualizarRegistro(@Param('id', ParseIntPipe) id:number, @Body() actualizarPermisoModuloDto: ActualizarPermisoModuloDto) {
+        return this.permisoModuloService.actualizarRegistro(id, actualizarPermisoModuloDto);
     }
 }

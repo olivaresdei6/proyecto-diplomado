@@ -35,8 +35,8 @@ export class LibroService {
         }
     }
 
-    async obtenerUnRegistro(uuid: string): Promise<LibroEntity> {
-        const respuesta =  await this.servicioDeBaseDeDatos.libro.obtenerUnRegistroPor({where: {uuid, estado: 1}}, 'Libro');
+    async obtenerUnRegistro(id: number): Promise<LibroEntity> {
+        const respuesta =  await this.servicioDeBaseDeDatos.libro.obtenerUnRegistroPor({where: {id, estado: 1}}, 'Libro');
         if (respuesta) {
             return respuesta;
         }else {
@@ -44,12 +44,12 @@ export class LibroService {
         }
     }
 
-    async actualizarRegistro(uuid: string, actualizarLibroDto: ActualizarLibroDto)  {
+    async actualizarRegistro(id: number, actualizarLibroDto: ActualizarLibroDto)  {
         let libro;
         if (actualizarLibroDto.unidades) {
-            libro = await this.servicioDeBaseDeDatos.libro.actualizarRegistro(uuid, {...actualizarLibroDto, unidadesDisponibles: actualizarLibroDto.unidades});
+            libro = await this.servicioDeBaseDeDatos.libro.actualizarRegistro(id, {...actualizarLibroDto, unidadesDisponibles: actualizarLibroDto.unidades});
         }else{
-            libro = await this.servicioDeBaseDeDatos.libro.actualizarRegistro(uuid, {...actualizarLibroDto});
+            libro = await this.servicioDeBaseDeDatos.libro.actualizarRegistro(id, {...actualizarLibroDto});
         }
         if (libro) {
             return {
@@ -59,8 +59,8 @@ export class LibroService {
         }
     }
 
-    async eliminarRegistro(uuid: string) {
-        const libro = await this.servicioDeBaseDeDatos.libro.actualizarRegistro(uuid, {estado: 0});
+    async eliminarRegistro(id: number) {
+        const libro = await this.servicioDeBaseDeDatos.libro.actualizarRegistro(id, {estado: 0});
         if (libro) {
             return {
                 status: 201,

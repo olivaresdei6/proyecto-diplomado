@@ -35,12 +35,12 @@ export class ParametroService {
         }
     }
     
-    async obtenerUnRegistro(uuid: string): Promise<ParametroEntity> {
-        return await this.servicioDeBaseDeDatos.parametro.obtenerUnRegistroPor({where: {uuid}}, 'Parámetro');
+    async obtenerUnRegistro(id: number): Promise<ParametroEntity> {
+        return await this.servicioDeBaseDeDatos.parametro.obtenerUnRegistroPor({where: {id}}, 'Parámetro');
     }
     
-    async actualizarRegistro(uuid: string, actualizarParametroDto: ActualizarParametroDto)  {
-        const parametro = await this.servicioDeBaseDeDatos.parametro.actualizarRegistro(uuid, actualizarParametroDto);
+    async actualizarRegistro(id: number, actualizarParametroDto: ActualizarParametroDto)  {
+        const parametro = await this.servicioDeBaseDeDatos.parametro.actualizarRegistro(id, actualizarParametroDto);
         if (parametro) {
             return {
                 status: 201,

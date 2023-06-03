@@ -3,8 +3,7 @@ import {
     Body,
     Controller,
     Get,
-    Param,
-    ParseUUIDPipe,
+    Param, ParseIntPipe,
     Patch,
     Post,
     Query, Req, UseInterceptors
@@ -97,11 +96,13 @@ export class UsuarioController {
     @ApiResponse({ status: 401, description: 'Unauthorized: No tiene permisos para realizar esta acción' })
     @ApiResponse({ status: 403, description: 'Forbidden: Verifique que el token de autenticación sea válido y que no halla expirado.' })
     @ApiResponse({ status: 404, description: 'Not Found: El usuario no existe.' })
+    @Auth()
     @Get('/one')
-    obtenerUnUsuario(@Req () request: Request) {
+    obtenerUnUsuario(@Req () request) {
+        console.log(request.user);
         // @ts-ignore
-        const uuid = request.user.uuid;
-        return this.usuarioService.obtenerUnUsuario(uuid);
+        const id = request.user.id;
+        return this.usuarioService.obtenerUnUsuario(id);
     }
     
 
@@ -111,9 +112,9 @@ export class UsuarioController {
     @ApiResponse({ status: 403, description: 'Forbidden: Verifique que el token de autenticación sea válido y que no halla expirado.' })
     @ApiResponse({ status: 404, description: 'Not Found: El usuario no existe.' })
     @Auth()
-    @Patch(':uuid')
-    actualizarUsuario(@Param('uuid', ParseUUIDPipe) uuid:string, @Body() actualizarUsuarioDto: ActualizarUsuarioDto) {
-        return this.usuarioService.actualizarRegistro(uuid, actualizarUsuarioDto);
+    @Patch(':id')
+    actualizarUsuario(@Param('id', ParseIntPipe) id:number, @Body() actualizarUsuarioDto: ActualizarUsuarioDto) {
+        return this.usuarioService.actualizarRegistro(id, actualizarUsuarioDto);
     }
 
     @ApiResponse({ status: 201, description: 'Sesión cerrada correctamente' })

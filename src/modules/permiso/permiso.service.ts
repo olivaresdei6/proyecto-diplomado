@@ -16,20 +16,20 @@ export class PermisoService {
     
     
     async crearRegistro(crearPermisoDto: CrearPermisoDto)  {
-        const { uuidRuta, uuidModulo, uuidRol } = crearPermisoDto;
-        const [idRuta, idModulo, idRol] = await Promise.all([
-            this.obtenerIdRuta(uuidRuta),
-            this.obtenerIdModulo(uuidModulo),
-            this.obtenerRol(uuidRol)
+        const { idRuta, idModulo, idRol } = crearPermisoDto;
+        const [rutaId, moduloId, rolId] = await Promise.all([
+            this.obtenerIdRuta(idRuta),
+            this.obtenerIdModulo(idModulo),
+            this.obtenerRol(idRol)
         ]);
         if (!idRuta || !idModulo || !idRol) {
             throw new BadRequestException('No se encontró la ruta, el módulo o el rol enviados');
         }
         const permiso = await this.servicioDeBaseDeDatos.permiso.crearRegistro({
             ...crearPermisoDto,
-            ruta: idRuta.id,
-            modulo: idModulo.id,
-            rol: idRol.id,
+            ruta: idRuta,
+            modulo: idModulo,
+            rol: idRol,
         });
         return {
             status: 201,
@@ -43,39 +43,39 @@ export class PermisoService {
     }
 
 
-    async obtenerUnRegistro(uuid: string): Promise<PermisoEntity> {
-        return await this.servicioDeBaseDeDatos.permiso.obtenerUnRegistroPor({where: {uuid, estado: 1}}, 'Permiso');
+    async obtenerUnRegistro(id: number): Promise<PermisoEntity> {
+        return await this.servicioDeBaseDeDatos.permiso.obtenerUnRegistroPor({where: {id, estado: 1}}, 'Permiso');
     }
 
-    async actualizarRegistro(uuid: string, actualizarPermisoDto: ActualizarPermisoDto)  {
-        const { uuidRuta, uuidModulo, uuidRol, observacion, descripcion } = actualizarPermisoDto;
-        if (uuidRuta) await this.servicioDeBaseDeDatos.permiso.actualizarRegistro(uuid, { ruta: (await this.obtenerIdRuta(uuidRuta)).id });
-        if (uuidModulo) await this.servicioDeBaseDeDatos.permiso.actualizarRegistro(uuid, { modulo: (await this.obtenerIdModulo(uuidModulo)).id });
-        if (uuidRol) await this.servicioDeBaseDeDatos.permiso.actualizarRegistro(uuid, { rol: (await this.obtenerRol(uuidRol)).id });
-        await this.servicioDeBaseDeDatos.permiso.actualizarRegistro(uuid, { observacion, descripcion });
+    async actualizarRegistro(id: number, actualizarPermisoDto: ActualizarPermisoDto)  {
+        const { idRuta, idModulo, idRol, observacion, descripcion } = actualizarPermisoDto;
+        if (idRuta) await this.servicioDeBaseDeDatos.permiso.actualizarRegistro(id, { ruta: (await this.obtenerIdRuta(idRuta)).id });
+        if (idModulo) await this.servicioDeBaseDeDatos.permiso.actualizarRegistro(id, { modulo: (await this.obtenerIdModulo(idModulo)).id });
+        if (idRol) await this.servicioDeBaseDeDatos.permiso.actualizarRegistro(id, { rol: (await this.obtenerRol(idRol)).id });
+        await this.servicioDeBaseDeDatos.permiso.actualizarRegistro(id, { observacion, descripcion });
         return {
             status: 200,
             message: 'Permiso actualizado correctamente',
         }
     }
 
-    async eliminarRegistro(uuid: string) {
-        await this.servicioDeBaseDeDatos.permiso.actualizarRegistro(uuid, { estado: 0 })
+    async eliminarRegistro(id: number) {
+        await this.servicioDeBaseDeDatos.permiso.actualizarRegistro(id, { estado: 0 })
         return {
             status: 200,
             message: 'Permiso eliminado correctamente',
         }
     }
     
-    async obtenerIdRuta(uuid: string): Promise<PermisoRutaEntity> {
-        return await this.servicioDeBaseDeDatos.permisoRuta.obtenerUnRegistroPor({where: {uuid, estado: 1}}, 'Ruta');
+    async obtenerIdRuta(id: number): Promise<PermisoRutaEntity> {
+        return await this.servicioDeBaseDeDatos.permisoRuta.obtenerUnRegistroPor({where: {id, estado: 1}}, 'Ruta');
     }
 
-    async obtenerIdModulo(uuid: string): Promise<PermisoModuloEntity> {
-        return await this.servicioDeBaseDeDatos.permisoModulo.obtenerUnRegistroPor({where: {uuid, estado: 1}}, 'Modulo');
+    async obtenerIdModulo(id: number): Promise<PermisoModuloEntity> {
+        return await this.servicioDeBaseDeDatos.permisoModulo.obtenerUnRegistroPor({where: {id, estado: 1}}, 'Modulo');
     }
 
-    async obtenerRol(uuid: string): Promise<PermisoRolEntity> {
-        return await this.servicioDeBaseDeDatos.permisoRol.obtenerUnRegistroPor({where: {uuid, estado: 1}}, 'Rol');
+    async obtenerRol(id: number): Promise<PermisoRolEntity> {
+        return await this.servicioDeBaseDeDatos.permisoRol.obtenerUnRegistroPor({where: {id, estado: 1}}, 'Rol');
     }
 }

@@ -2,8 +2,7 @@ import {
     Body,
     Controller,
     Get,
-    Param,
-    ParseUUIDPipe,
+    Param, ParseIntPipe,
     Patch,
     Post,
     Query,
@@ -73,9 +72,9 @@ export class LibroController {
     @ApiResponse({ status: 403, description: 'Forbidden: Verifique que el token de autenticación sea válido y que no halla expirado.' })
     @ApiResponse({ status: 404, description: 'Not Found: El libro no existe.' })
 
-    @Get(':uuid')
-    obtenerUnRegistro(@Param('uuid', ParseUUIDPipe) uuid:string): Promise<LibroEntity>  {
-        return this.libroService.obtenerUnRegistro(uuid);
+    @Get(':id')
+    obtenerUnRegistro(@Param('id', ParseIntPipe) id:number): Promise<LibroEntity>  {
+        return this.libroService.obtenerUnRegistro(id);
     }
 
     @ApiResponse({ status: 201, description: 'Registro eliminado correctamente.', type: LibroEntity})
@@ -83,9 +82,9 @@ export class LibroController {
     @ApiResponse({ status: 401, description: 'Unauthorized: No tiene permisos para realizar esta acción' })
     @ApiResponse({ status: 403, description: 'Forbidden: Verifique que el token de autenticación sea válido y que no halla expirado.' })
     @ApiResponse({ status: 404, description: 'Not Found: El registro no existe.' })
-    @Patch('/delete/:uuid')
-    eliminarRegistro(@Param('uuid', ParseUUIDPipe) uuid) {
-        return this.libroService.eliminarRegistro(uuid);
+    @Patch('/delete/:id')
+    eliminarRegistro(@Param('id', ParseIntPipe) id) {
+        return this.libroService.eliminarRegistro(id);
     }
 
     @ApiResponse({ status: 201, description: 'Libro actualizado correctamente.', type: LibroEntity})
@@ -93,8 +92,8 @@ export class LibroController {
     @ApiResponse({ status: 401, description: 'Unauthorized: No tiene permisos para realizar esta acción' })
     @ApiResponse({ status: 403, description: 'Forbidden: Verifique que el token de autenticación sea válido y que no halla expirado.' })
     @ApiResponse({ status: 404, description: 'Not Found: El libro no existe.' })
-    @Patch(':uuid')
-    actualizarRegistro(@Param('uuid', ParseUUIDPipe) uuid, @Body() actualizarLibroDto: ActualizarLibroDto) {
-        return this.libroService.actualizarRegistro(uuid, actualizarLibroDto);
+    @Patch(':id')
+    actualizarRegistro(@Param('id', ParseIntPipe) id, @Body() actualizarLibroDto: ActualizarLibroDto) {
+        return this.libroService.actualizarRegistro(id, actualizarLibroDto);
     }
 }

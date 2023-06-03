@@ -21,10 +21,10 @@ export class CrearPrestamoDto {
     fechaDevolucionEsperada!: string;
 
     @ApiProperty({
-      description: 'UUID del libro que se presta',
-      nullable: false,
+      description: 'ID del usuario',
+      example: 1,
+      required: true
     })
-    @IsString({ message: 'El UUID debe ser un string' })
-    @IsUUID('all', { message: 'El UUID debe ser un UUID válido' })
-    uuidLibro!: string;
+    @IsNumber({}, { message: 'El ID del usuario debe ser un número' })
+    idLibro!: number;
 }

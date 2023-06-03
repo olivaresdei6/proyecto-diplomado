@@ -2,8 +2,7 @@ import {
     Body,
     Controller,
     Get,
-    Param,
-    ParseUUIDPipe,
+    Param, ParseIntPipe,
     Patch,
     Post,
     Query,
@@ -37,9 +36,9 @@ export class ValorParametroController {
     @ApiResponse({ status: 401, description: 'Unauthorized: No tiene permisos para realizar esta acción' })
     @ApiResponse({ status: 403, description: 'Forbidden: Verifique que el token de autenticación sea válido y que no halla expirado.' })
     @ApiResponse({ status: 404, description: 'Not Found: El Valor parámetro no existe.' })
-    @Get('parametro/:uuid')
-    obtenerTodosLosRegistros(@Param('uuid') uuid:string ): Promise<ValorParametroEntity[]>  {
-        return this.valorParametroService.obtenerTodosLosRegistros(uuid);
+    @Get('parametro/:id')
+    obtenerTodosLosRegistros(@Param('id_parametro') idParametro:number ): Promise<ValorParametroEntity[]>  {
+        return this.valorParametroService.obtenerTodosLosRegistros(idParametro);
     }
 
     @ApiResponse({ status: 201, description: 'Valores Parámetros encontrados correctamente.', type: ParametroEntity, isArray: true})
@@ -66,9 +65,9 @@ export class ValorParametroController {
     @ApiResponse({ status: 403, description: 'Forbidden: Verifique que el token de autenticación sea válido y que no halla expirado.' })
     @ApiResponse({ status: 404, description: 'Not Found: El Valor parámetro no existe.' })
     @Auth()
-    @Get(':uuid')
-    obtenerUnRegistro(@Param('uuid', ParseUUIDPipe) uuid): Promise<ValorParametroEntity>  {
-        return this.valorParametroService.obtenerUnRegistro(uuid)
+    @Get(':id')
+    obtenerUnRegistro(@Param('id', ParseIntPipe) id:number): Promise<ValorParametroEntity>  {
+        return this.valorParametroService.obtenerUnRegistro(id)
     }
 
 
@@ -79,8 +78,8 @@ export class ValorParametroController {
     @ApiResponse({ status: 403, description: 'Forbidden: Verifique que el token de autenticación sea válido y que no halla expirado.' })
     @ApiResponse({ status: 404, description: 'Not Found: El valor parámetro no existe.' })
     @Auth()
-    @Patch(':uuid')
-    actualizarRegistro(@Param('uuid', ParseUUIDPipe) uuid, @Body() actualizarValorParametroDto: ActualizarValorParametroDto) {
-        return this.valorParametroService.actualizarRegistro(uuid, actualizarValorParametroDto);
+    @Patch(':id')
+    actualizarRegistro(@Param('id', ParseIntPipe)id, @Body() actualizarValorParametroDto: ActualizarValorParametroDto) {
+        return this.valorParametroService.actualizarRegistro(id, actualizarValorParametroDto);
     }
 }

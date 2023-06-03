@@ -35,9 +35,9 @@ export class PermisoModuloService {
         }
     }
 
-    async obtenerUnRegistro(uuid: string): Promise<PermisoModuloEntity> {
+    async obtenerUnRegistro(id: number): Promise<PermisoModuloEntity> {
 
-            const respuesta =  await this.servicioDeBaseDeDatos.permisoModulo.obtenerUnRegistroPor({where: {uuid, estado: 1}}, 'Modulo De Permiso');
+            const respuesta =  await this.servicioDeBaseDeDatos.permisoModulo.obtenerUnRegistroPor({where: {id, estado: 1}}, 'Modulo De Permiso');
             if (respuesta) {
                 return respuesta;
             }else {
@@ -45,8 +45,8 @@ export class PermisoModuloService {
             }
     }
 
-    async actualizarRegistro(uuid: string, actualizarPermisoModuloDto: ActualizarPermisoModuloDto)  {
-        const moduloPermiso = await this.servicioDeBaseDeDatos.permisoModulo.actualizarRegistro(uuid, actualizarPermisoModuloDto);
+    async actualizarRegistro(id: number, actualizarPermisoModuloDto: ActualizarPermisoModuloDto)  {
+        const moduloPermiso = await this.servicioDeBaseDeDatos.permisoModulo.actualizarRegistro(id, actualizarPermisoModuloDto);
         if (moduloPermiso) {
             return {
                 status: 201,
@@ -55,8 +55,8 @@ export class PermisoModuloService {
         }
     }
 
-    async eliminarRegistro(uuid: string) {
-        const respuesta = await this.servicioDeBaseDeDatos.permisoModulo.actualizarRegistro(uuid, {estado: 1});
+    async eliminarRegistro(id: number) {
+        const respuesta = await this.servicioDeBaseDeDatos.permisoModulo.actualizarRegistro(id, {estado: 1});
         if (respuesta) {
             return {
                 status: 201,

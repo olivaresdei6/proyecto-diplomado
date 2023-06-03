@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsUUID, MaxLength, MinLength } from "class-validator";
+import { IsNumber, IsOptional, IsString, IsUUID, MaxLength, MinLength } from "class-validator";
 import {ApiProperty} from "@nestjs/swagger";
 
 export class CrearValorParametroDto {
@@ -14,14 +14,12 @@ export class CrearValorParametroDto {
     nombre!: string;
     
     @ApiProperty({
-        example: 'ab59-4b6b-9fbc-57e2',
-        description: 'UUID del parámetro',
+        example: 3,
+        description: 'ID del parámetro al que pertenece este valor',
         nullable: false,
     })
-    @IsString({message: "El uuid de cada parámetro debe ser un texto"})
-    @IsUUID('4', {message: "El uuid de cada parámetro debe tener un formato válido"})
-    @MaxLength(36, {message: "El uuid de cada parámetro debe tener máximo 36 caracteres"})
-    uuid_parametro!: string;
+    @IsNumber({}, {message: "El ID del parámetro debe ser un número"})
+    idParametro!: number;
     
     
     @ApiProperty({

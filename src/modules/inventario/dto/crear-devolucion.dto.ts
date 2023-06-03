@@ -13,10 +13,10 @@ export class CrearDevolucionDto {
     observacionesDevolucion?: string;
 
     @ApiProperty({
-      description: 'UUID del prestamo',
-      nullable: false,
+      description: 'ID del prestamo',
+      example: 1,
+      required: true
     })
-    @IsString({ message: 'El UUID debe ser un string' })
-    @IsUUID('all', { message: 'El UUID debe ser un UUID válido' })
-    uuidPrestamo!: string;
+    @IsNumber({}, { message: 'El ID del prestamo debe ser un número' })
+    idPrestamo!: number;
 }

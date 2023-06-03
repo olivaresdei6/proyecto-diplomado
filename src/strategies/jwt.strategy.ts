@@ -22,8 +22,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
     
     async validate(payload: JwtPayload) : Promise<UsuarioEntity> {
-        const {  uuid } = payload;
-        const usuario = await this.servicioDeBaseDeDatos.usuario.obtenerUnRegistroPor({ where: { uuid} }, 'Usuario');
+        const {  id } = payload;
+        const usuario = await this.servicioDeBaseDeDatos.usuario.obtenerUnRegistroPor({ where: { id} }, 'Usuario');
         if (!usuario || usuario.estado !== 1 || !usuario.estaActivo) {
            throw new UnauthorizedException('No tienes permisos para acceder a este recurso');
         }

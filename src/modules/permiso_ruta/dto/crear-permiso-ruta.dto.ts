@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsOptional, IsString, IsUUID, MaxLength, MinLength } from "class-validator";
+import { IsBoolean, IsNumber, IsOptional, IsString, IsUUID, MaxLength, MinLength } from "class-validator";
 
 
 export class CrearPermisoRutaDto {
@@ -26,11 +26,11 @@ export class CrearPermisoRutaDto {
 
     @ApiProperty({
         description: 'Accion que se puede ejecutar en la ruta',
-        example: 'ab7b1c9c-1b1a-4f6a-8f0a-2b1a1d6b1a1d',
+        example: 3,
         required: true,
     })
-    @IsUUID('4', { message: 'El UUID del Método http debe ser un UUID valido' })
-    uuidMetodoHttp!: string;
+    @IsNumber({}, { message: 'La acción que se puede ejecutar en la ruta debe ser un número' })
+    idMetodoHttp!: number;
 
 
     @ApiProperty({

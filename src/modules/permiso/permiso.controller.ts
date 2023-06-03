@@ -2,16 +2,13 @@ import {
     Body,
     Controller,
     Get,
-    Param,
-    ParseUUIDPipe,
+    Param, ParseIntPipe,
     Patch,
-    Post,
-    Query, UseInterceptors
+    Post
 } from "@nestjs/common";
 import {PermisoService} from './permiso.service';
-import { ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { LibroEntity, PermisoEntity } from "../../frameworks/database/mysql/entities";
-import { PaginacionInterceptor } from "../../config/iterceptors/paginacion.interceptor";
 import { CrearPermisoDto } from "./dto/crear-permiso.dto";
 import { ActualizarPermisoDto } from "./dto/actualizar-permiso.dto";
 import { Auth } from "../../decorators/auth.decorator";
@@ -48,9 +45,9 @@ export class PermisoController {
     @ApiResponse({ status: 401, description: 'Unauthorized: No tiene permisos para realizar esta acción' })
     @ApiResponse({ status: 403, description: 'Forbidden: Verifique que el token de autenticación sea válido y que no halla expirado.' })
     @ApiResponse({ status: 404, description: 'Not Found: El Permiso no existe.' })
-    @Get(':uuid')
-    obtenerUnRegistro(@Param('uuid', ParseUUIDPipe) uuid: string): Promise<PermisoEntity> {
-        return this.permisoService.obtenerUnRegistro(uuid);
+    @Get(':id')
+    obtenerUnRegistro(@Param('id', ParseIntPipe) id: number): Promise<PermisoEntity> {
+        return this.permisoService.obtenerUnRegistro(id);
     }
 
 
@@ -59,9 +56,9 @@ export class PermisoController {
     @ApiResponse({ status: 401, description: 'Unauthorized: No tiene permisos para realizar esta acción' })
     @ApiResponse({ status: 403, description: 'Forbidden: Verifique que el token de autenticación sea válido y que no halla expirado.' })
     @ApiResponse({ status: 404, description: 'Not Found: El registro no existe.' })
-    @Patch('/delete/:uuid')
-    eliminarRegistro(@Param('uuid', ParseUUIDPipe) uuid) {
-        return this.permisoService.eliminarRegistro(uuid);
+    @Patch('/delete/:id')
+    eliminarRegistro(@Param('id', ParseIntPipe) id) {
+        return this.permisoService.eliminarRegistro(id);
     }
 
 
@@ -71,8 +68,8 @@ export class PermisoController {
     @ApiResponse({ status: 401, description: 'Unauthorized: No tiene permisos para realizar esta acción' })
     @ApiResponse({ status: 403, description: 'Forbidden: Verifique que el token de autenticación sea válido y que no halla expirado.' })
     @ApiResponse({ status: 404, description: 'Not Found: El Permiso no existe.' })
-    @Patch(':uuid')
-    actualizarRegistro(@Param('uuid', ParseUUIDPipe) uuid:string, @Body() actualizarPermisoDto: ActualizarPermisoDto) {
-        return this.permisoService.actualizarRegistro(uuid, actualizarPermisoDto);
+    @Patch(':id')
+    actualizarRegistro(@Param('id', ParseIntPipe) id:number, @Body() actualizarPermisoDto: ActualizarPermisoDto) {
+        return this.permisoService.actualizarRegistro(id, actualizarPermisoDto);
     }
 }
